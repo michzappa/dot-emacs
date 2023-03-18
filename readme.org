@@ -1,0 +1,4 @@
+The third generation of my Emacs configuration, with the goal of increasing my understanding of Emacs Lisp and the Emacs packaging system.
+
+- =./config= contains =use-package= blocks for Emacs packages I do not maintain.
+- =./lisp= contains Emacs packages I have written or maintain for myself.
