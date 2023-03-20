@@ -39,6 +39,7 @@
       mode-require-final-newline 'visit-save
       ring-bell-function #'ignore
       save-interprogram-paste-before-kill t
+      split-height-threshold nil
       vc-follow-symlinks t)
 
 (bind-key "C-c D m" #'mkdir)
