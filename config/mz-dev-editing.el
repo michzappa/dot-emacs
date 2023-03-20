@@ -56,6 +56,11 @@
 (add-hook 'ielm-mode-hook #'eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook #'eldoc-mode)
 
+(use-package macrostep
+  :bind (:map emacs-lisp-mode-map
+              ("C-c e" . macrostep-expand)
+              ("C-c q" . macrostep-collapse-all)))
+
 (use-feature eglot
   :hook
   (typescript-ts-base-mode-hook . eglot-ensure)
