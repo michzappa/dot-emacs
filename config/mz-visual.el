@@ -69,13 +69,16 @@
 
 (use-package ef-themes
   :demand t
+  :init
+  (defvar mz/ef-dark 'ef-dark)
+  (defvar mz/ef-light 'ef-light)
   :functions
   (ef-themes--load-theme
    ef-themes-toggle)
-  :hook (emacs-startup-hook . (lambda () (ef-themes--load-theme 'ef-trio-dark)))
+  :hook (emacs-startup-hook . (lambda () (ef-themes--load-theme mz/ef-dark)))
   :bind (("C-c T" . #'ef-themes-toggle))
   :custom
-  (ef-themes-to-toggle '(ef-trio-dark ef-trio-light)))
+  (ef-themes-to-toggle (list mz/ef-dark mz/ef-light)))
 
 (use-package modus-themes
   :custom
