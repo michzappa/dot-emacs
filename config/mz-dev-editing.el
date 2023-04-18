@@ -15,12 +15,7 @@
   :defines
   (apheleia-formatters)
   :hook
-  (nix-mode-hook tuareg-mode-hook typescript-ts-base-mode-hook)
-  :config
-  ;; Prettier doesn't seem to always pick up config from .prettierrc.
-  (add-to-list
-   'apheleia-formatters
-   '(prettier-typescript . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript" "--bracket-same-line"))))
+  (nix-mode-hook tuareg-mode-hook typescript-ts-base-mode-hook))
 
 (use-package ws-butler
   :hook (org-mode-hook prog-mode-hook)
@@ -42,6 +37,12 @@
 (setq-default tab-width 4
               indent-tabs-mode nil
               sentence-end-double-space nil)
+
+(use-package company
+  :hook (after-init-hook . global-company-mode)
+  :custom
+  (company-idle-delay 0)
+  (company-show-numbers t))
 
 (use-feature agda2-mode
   :mode "\\.agda\\'")
@@ -123,6 +124,7 @@
 (use-package tuareg)
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-ts-mode))
 
 (use-package racket-mode)
 
