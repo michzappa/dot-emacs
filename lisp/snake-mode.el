@@ -9,8 +9,8 @@
 ;;; Code:
 
 (defconst snake-constants '("true" "false"))
-(defconst snake-keywords '("let" "letrec" "in" "if" "else" "def" "begin" "end"))
-(defconst snake-runtime-functions '("print" "input"))
+(defconst snake-keywords '("let" "lambda" "rec" "in" "if" "else" "def" "begin" "end"))
+(defconst snake-runtime-functions '("print" "input" "equal" "printStack"))
 
 (defconst snake-constants-regexp (regexp-opt snake-constants 'words))
 (defconst snake-keywords-regexp (regexp-opt snake-keywords 'words))
@@ -28,6 +28,8 @@
 (add-to-list 'auto-mode-alist '("\\.diamond\\'" . snake-mode))
 (add-to-list 'auto-mode-alist '("\\.egg\\'" . snake-mode))
 (add-to-list 'auto-mode-alist '("\\.fdl\\'" . snake-mode))
+(add-to-list 'auto-mode-alist '("\\.garter\\'" . snake-mode))
+(add-to-list 'auto-mode-alist '("\\.racer\\'" . snake-mode))
 
 ;;;###autoload
 (define-derived-mode snake-mode fundamental-mode
@@ -37,14 +39,6 @@
   (font-lock-add-keywords nil '(("#.+" . font-lock-comment-face)))
   (setq comment-start "# ")
   (setq comment-end ""))
-
-(setq snake-keywords nil)
-(setq snake-runtime-functions nil)
-(setq snake-constants nil)
-
-(setq snake-keywords-regexp nil)
-(setq snake-runtime-functions nil)
-(setq snake-constants-regexp nil)
 
 (provide 'snake-mode)
 ;;; snake-mode.el ends here
