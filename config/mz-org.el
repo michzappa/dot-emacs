@@ -11,7 +11,10 @@
 (require 'mz-package-management)
 
 (use-package org
+  :demand t
+  :commands (mz/find-org-file)
   :bind (("C-c o c" . #'org-capture)
+         ("C-c o f" . #'mz/find-org-file)
          :map org-mode-map
          ("C-c C-l" . #'org-insert-link)
          ("C-c C-S-l" . #'org-store-link))
@@ -26,6 +29,14 @@
   (org-support-shift-select t)
   (org-tags-column 0)
   :config
+  (defun mz/find-org-file ()
+    "Search for and open a file in `org-directory'."
+    (interactive)
+    (find-file
+     (completing-read
+      "Org File: "
+      (directory-files-recursively org-directory ".org"))))
+
   (add-to-list 'org-link-frame-setup '(file . find-file))
 
   (use-feature-dependency ob-tangle
@@ -48,9 +59,9 @@
     (org-drill-save-buffers-after-drill-sessions-p nil)
     :config
     (add-to-list 'org-capture-templates
-     `("f" "French Item" entry
-        (file ,(expand-file-name "french.org" org-directory))
-        "* %^{Part of Speech|Nom|Adjectif|Verbe|Adverbes|Conjunction|Préposition|Pronom|Expression|Rugby} :drill:\n:PROPERTIES:\n:DRILL_CARD_TYPE: twosided\n:END:\n** French\n%^{French}\n** English\n%^{English}"))
+                 `("f" "French Item" entry
+                   (file ,(expand-file-name "french.org" org-directory))
+                   "* %^{Part of Speech|Nom|Adjectif|Verbe|Adverbes|Conjunction|Préposition|Pronom|Expression|Rugby} :drill:\n:PROPERTIES:\n:DRILL_CARD_TYPE: twosided\n:END:\n** French\n%^{French}\n** English\n%^{English}"))
     (defun mz/org-drill-resume ()
       "Resumes an org-drill session if one exists, otherwise starts anew."
       (interactive)
@@ -66,7 +77,7 @@
       :config
       (ox-extras-activate '(ignore-headlines))))
 
-    (use-feature-dependency org-tempo
+  (use-feature-dependency org-tempo
     :config
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
     (add-to-list 'org-structure-template-alist '("nn" . "src nix :noweb-ref")))
@@ -84,40 +95,5 @@
   (use-package-dependency org-bullets
     :hook org-mode-hook))
 
-(use-package org-roam
-  :defines
-  (org-roam-db-location
-   org-roam-directory)
-  :functions
-  (org-roam-setup
-   org-roam-db-autosync-mode)
-  :bind (("C-c n c" . org-roam-capture)
-         ("C-c n f" . org-roam-node-find)
-         :map org-mode-map
-         (("C-c n o" . org-id-get-create)
-          ("C-c n i" . org-roam-node-insert)
-          ("C-c n E" . org-roam-extract-subtree)))
-  :custom
-  (org-roam-capture-templates '())
-  (org-roam-completion-everywhere t)
-  (org-roam-directory org-directory)
-  (org-roam-extract-new-file-path "${slug}.org")
-  (org-roam-node-display-template
-   (concat "${title:*} "
-           (propertize "${tags:30}" 'face 'org-tag)))
-  ;; Exclude every org-drill vocab entry and files which have been
-  ;; copied to the nix store.
-  (org-roam-db-node-include-function
-   #'(lambda () (and (not (file-in-directory-p (buffer-file-name) "/nix/store/"))
-                (not (member "drill" (org-get-tags))))))
-  :config
-  (setq org-roam-db-location (expand-file-name "org-roam.db" org-roam-directory))
-  (org-roam-setup)
-  (org-roam-db-autosync-mode)
-  (use-package org-roam-ui
-    :functions
-    (org-roam-ui-mode)
-    :bind (:map org-mode-map (("C-c n V" . (lambda () (interactive)
-                                             (org-roam-ui-mode +1)))))))
 (provide 'mz-org)
 ;;; mz-org.el ends here
