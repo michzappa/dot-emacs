@@ -21,6 +21,9 @@
 (bind-key "C-c t" (lambda () (interactive)
                     (shell (concat "shell: " default-directory))))
 
+(bind-key "C-c T" (lambda () (interactive)
+                    (call-process (getenv "TERM_APP") nil 0 nil default-directory)))
+
 (use-feature vterm
   :demand t
   :after project

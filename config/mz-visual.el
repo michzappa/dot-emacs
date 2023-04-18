@@ -1,4 +1,4 @@
-;;; mz-visual --- Michael Zappa's Emacs Configuration
+;;; mz-visual --- Michael Zappa's Emacs Configuration  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -76,7 +76,7 @@
   (ef-themes--load-theme
    ef-themes-toggle)
   :hook (emacs-startup-hook . (lambda () (ef-themes--load-theme mz/ef-dark)))
-  :bind (("C-c T" . #'ef-themes-toggle))
+  :bind (("C-S-t" . #'ef-themes-toggle))
   :custom
   (ef-themes-to-toggle (list mz/ef-dark mz/ef-light)))
 
