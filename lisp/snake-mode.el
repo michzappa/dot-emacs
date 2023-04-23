@@ -30,6 +30,7 @@
 (add-to-list 'auto-mode-alist '("\\.fdl\\'" . snake-mode))
 (add-to-list 'auto-mode-alist '("\\.garter\\'" . snake-mode))
 (add-to-list 'auto-mode-alist '("\\.racer\\'" . snake-mode))
+(add-to-list 'auto-mode-alist '("\\.snake\\'" . snake-mode))
 
 ;;;###autoload
 (define-derived-mode snake-mode fundamental-mode
