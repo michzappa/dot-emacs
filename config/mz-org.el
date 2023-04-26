@@ -20,8 +20,11 @@
          ("C-c C-S-l" . #'org-store-link))
   :custom
   (org-directory "~/org")
+  (org-goto-interface 'outline-path-completion)
+  (org-goto-max-level 10)
   (org-image-actual-width nil)
   (org-imenu-depth 10)
+  (org-outline-path-complete-in-steps nil)
   (org-refile-targets nil)
   (org-src-fontify-natively t)
   (org-src-tab-acts-natively t)
