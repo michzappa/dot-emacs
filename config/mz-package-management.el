@@ -10,9 +10,6 @@
 
 ;;; Code:
 
-(require 'mz-tuning)
-(require 'use-package)
-
 (setq use-package-always-defer t
       use-package-hook-name-suffix "")
 
@@ -66,6 +63,9 @@ For loading dependencies in `:config'. NAME and BODY are as in
 ;; install them from `straight'. This prevents version conflicts.
 (straight-register-package 'org)
 (straight-register-package 'org-contrib)
+
+(when (not (require 'use-package nil t))
+  (straight-use-package 'use-package))
 
 (use-package no-littering
   :demand t)

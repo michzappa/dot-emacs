@@ -10,6 +10,7 @@
 ;;; Code:
 
 (require 'comp)
+(require 'mz-package-management)
 
 (setq gc-cons-threshold (* 100 1024 1024)
       native-comp-async-report-warnings-errors nil)
