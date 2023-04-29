@@ -88,7 +88,7 @@
   :hook (after-init-hook . minions-mode))
 
 (use-feature whitespace
-  :hook prog-mode-hook
+  :hook (prog-mode-hook . whitespace-mode)
   :custom
   (whitespace-line-column 100)
   (whitespace-style '(face
@@ -99,10 +99,10 @@
 
 (use-package hl-todo
   :hook
-  (prog-mode-hook org-mode-hook))
+  ((prog-mode-hook org-mode-hook) . hl-todo-mode))
 
 (use-package rainbow-delimiters
-  :hook prog-mode-hook)
+  :hook (prog-mode-hook . rainbow-delimiters-mode))
 
 (use-package rainbow-mode
   :hook web-mode-hook)

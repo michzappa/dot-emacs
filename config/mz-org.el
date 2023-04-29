@@ -96,7 +96,7 @@
     (remove-hook 'before-save-hook 'org-encrypt-entries t))
 
   (use-package-dependency org-bullets
-    :hook org-mode-hook))
+    :hook (org-mode-hook . org-bullets-mode)))
 
 (provide 'mz-org)
 ;;; mz-org.el ends here

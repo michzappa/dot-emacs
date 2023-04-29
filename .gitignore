@@ -2,3 +2,5 @@
 /var/
 /custom.el
 /eln-cache/
+/etc/
+/eshell/

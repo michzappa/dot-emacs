@@ -29,7 +29,7 @@
   :after project
   :defines (vterm-max-scrollback project-switch-commands)
   :functions (vterm-other-window mz/vterm project-root)
-  :bind (("M-T" . #'mz/vterm))
+  :bind (("M-T" . mz/vterm))
   :custom
   (vterm-max-scrollback 100000)
   :config

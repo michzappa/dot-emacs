@@ -18,7 +18,7 @@
   (nix-mode-hook tuareg-mode-hook typescript-ts-base-mode-hook))
 
 (use-package ws-butler
-  :hook (org-mode-hook prog-mode-hook)
+  :hook ((org-mode-hook prog-mode-hook) . ws-butler-mode)
   :custom
   (ws-butler-convert-leading-tabs-or-spaces t))
 

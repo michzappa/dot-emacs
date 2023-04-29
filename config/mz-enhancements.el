@@ -184,7 +184,7 @@ If region, toggle region. If no region, toggle current line."
 (use-package puni
   :defines
   (puni-mode-map)
-  :hook prog-mode-hook
+  :hook (prog-mode-hook . puni-mode)
   :bind (:map puni-mode-map
               ("C-c s <" . puni-wrap-angle)
               ("C-c s (" . puni-wrap-round)
