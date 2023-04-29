@@ -39,6 +39,7 @@
   (defvar mz/base-elfeed-search-filter "@3-days-ago +unread")
   (defvar mz/home-elfeed-search-filter (concat mz/base-elfeed-search-filter " +home"))
   (setq browse-url-browser-function #'browse-url-firefox)
+  (run-with-timer 0 (* 4 60 60) 'elfeed-update) ; Update every 4 hours
   :bind (("C-c u f" . elfeed))
   :custom
   (elfeed-search-filter mz/home-elfeed-search-filter)
