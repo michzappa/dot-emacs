@@ -64,5 +64,9 @@ DIR is relative to `user-emacs-directory'."
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode))
 
+(use-package ledger-mode
+  :mode ("\\.ledger\\'")
+  :custom (ledger-clear-whole-transactions t))
+
 (provide 'init)
 ;;; init.el ends here
