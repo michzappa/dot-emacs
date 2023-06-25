@@ -16,7 +16,7 @@
       native-comp-async-report-warnings-errors nil)
 
 (use-package auto-compile
-  :hook (after-init-hook . auto-compile-on-load-mode))
+  :hook (elpaca-after-init-hook . auto-compile-on-load-mode))
 
 (provide 'mz-tuning)
 ;;; mz-tuning.el ends here

@@ -25,7 +25,7 @@
   (advice-add 'describe-key      :override #'helpful-key))
 
 (use-package which-key
-  :hook (after-init-hook . which-key-mode))
+  :hook (elpaca-after-init-hook . which-key-mode))
 
 (provide 'mz-help)
 ;;; mz-help.el ends here

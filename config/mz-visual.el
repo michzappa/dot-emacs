@@ -11,10 +11,9 @@
 
 (require 'mz-package-management)
 
-(use-package all-the-icons
-  :config
-  (use-package all-the-icons-completion
-    :after marginalia)
+(use-package all-the-icons)
+(use-package all-the-icons-completion
+  :after marginalia
   :hook (emacs-startup-hook . all-the-icons-completion-mode))
 
 (blink-cursor-mode -1)
@@ -85,7 +84,7 @@
   (modus-themes-syntax '(yellow-comments)))
 
 (use-package minions
-  :hook (after-init-hook . minions-mode))
+  :hook (elpaca-after-init-hook . minions-mode))
 
 (use-feature whitespace
   :hook (prog-mode-hook . whitespace-mode)
@@ -109,7 +108,7 @@
 
 (use-package git-gutter
   :hook
-  (after-init-hook . global-git-gutter-mode))
+  (elpaca-after-init-hook . global-git-gutter-mode))
 
 (provide 'mz-visual)
 ;;; mz-visual.el ends here

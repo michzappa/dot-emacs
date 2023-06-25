@@ -108,7 +108,7 @@ If region, save region. If no region, save current line."
 (bind-key "M-w" #'mz/kill-ring-save-dwim)
 
 (use-package clipetty
-  :hook (after-init-hook . global-clipetty-mode))
+  :hook (elpaca-after-init-hook . global-clipetty-mode))
 
 (setq mouse-wheel-progressive-speed nil
       scroll-conservatively 100000
@@ -124,14 +124,14 @@ If region, save region. If no region, save current line."
                         (scroll-up 1))))
 
 (use-package ctrlf
-  :hook (after-init-hook . ctrlf-mode)
+  :hook (elpaca-after-init-hook . ctrlf-mode)
   :custom
   (ctrlf-alternate-search-style 'regexp)
   (ctrlf-auto-recenter t)
   (ctrlf-default-search-style 'fuzzy))
 
 (use-package undo-tree
-  :hook (after-init-hook . global-undo-tree-mode)
+  :hook (elpaca-after-init-hook . global-undo-tree-mode)
   :custom
   (undo-tree-history-directory-alist
    `(("." . ,(concat user-emacs-directory "var/undo-tree-history")))))
@@ -159,7 +159,7 @@ If region, toggle region. If no region, toggle current line."
 
 (use-feature saveplace
   :hook
-  (after-init-hook . save-place-mode))
+  (elpaca-after-init-hook . save-place-mode))
 
 (use-package avy
   :functions
@@ -216,13 +216,13 @@ If region, toggle region. If no region, toggle current line."
     (bind-key "C-c =" #'er/expand-region org-mode-map)))
 
 (use-package marginalia
-  :hook (after-init-hook . marginalia-mode))
+  :hook (elpaca-after-init-hook . marginalia-mode))
 
 (use-package vertico
-  :hook (after-init-hook . vertico-mode))
+  :hook (elpaca-after-init-hook . vertico-mode))
 
-(use-package savehist
-  :hook (after-init-hook . savehist-mode))
+(use-feature savehist
+  :hook (elpaca-gafter-init-hook . savehist-mode))
 
 (use-package orderless
   :demand t

@@ -23,7 +23,7 @@
   (ws-butler-convert-leading-tabs-or-spaces t))
 
 (use-package scratch
-  :straight '(:type git :host nil :protocol "http" :repo "https://codeberg.org/emacs-weirdware/scratch")
+  :elpaca '(scratch :repo "https://codeberg.org/emacs-weirdware/scratch")
   :functions (scratch)
   :bind (("C-c S" . #'scratch)))
 
@@ -39,7 +39,7 @@
               sentence-end-double-space nil)
 
 (use-package company
-  :hook (after-init-hook . global-company-mode)
+  :hook (elpaca-after-init-hook . global-company-mode)
   :custom
   (company-idle-delay 0)
   (company-show-numbers t))
@@ -152,7 +152,7 @@
    web-mode-markup-indent-offset 2))
 
 (use-package kbd-mode
-  :straight '(:type git :host github :repo "kmonad/kbd-mode"))
+  :elpaca '(kbd-mode :host github :repo "kmonad/kbd-mode"))
 
 (provide 'mz-dev-editing)
 ;;; mz-dev-editing.el ends here

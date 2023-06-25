@@ -10,8 +10,7 @@
 
 (require 'mz-package-management)
 
-(use-package org
-  :demand t
+(use-feature org
   :commands (mz/find-org-file)
   :bind (("C-c o c" . #'org-capture)
          ("C-c o f" . #'mz/find-org-file)
@@ -72,7 +71,7 @@
             ((org-drill-entries-pending-p org-drill-last-session) (org-drill-resume))
             (t (org-drill)))))
 
-  (use-package-dependency org-contrib
+  (use-feature-dependency org-contrib
     :config
     (use-feature-dependency ox-extra
       :functions

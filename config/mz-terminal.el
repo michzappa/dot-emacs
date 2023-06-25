@@ -11,7 +11,7 @@
 
 (use-package exec-path-from-shell
   :hook
-  (after-init-hook . exec-path-from-shell-initialize))
+  (elpaca-after-init-hook . exec-path-from-shell-initialize))
 
 (use-package direnv
   :functions (direnv-mode)
