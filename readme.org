@@ -1,0 +1,6 @@
+* Version
+This configuration relies on Emacs ≥ 29, primarily for bundled =use-package=.
+
+* Installation
+1. Download the configuration with =git clone https://github.com/michzappa/dot-emacs.git=.
+2. Download the third-party packages with =git submodule update --init --recursive=.
