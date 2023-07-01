@@ -207,12 +207,12 @@ If region, save region. If no region, save current line."
   :after marginalia
   :hook (emacs-startup-hook . all-the-icons-completion-mode))
 
-(use-package apheleia
+(use-package apheleia-core
   :load-path "packages/apheleia"
   :hook
-  (nix-mode-hook
+  ((nix-mode-hook
    tuareg-mode-hook
-   typescript-ts-base-mode-hook))
+   typescript-ts-base-mode-hook) . apheleia-mode))
 
 (use-package atomic-chrome
   :load-path "packages/atomic-chrome"
