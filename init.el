@@ -3,10 +3,10 @@
 ;;; Commentary:
 
 ;; This configuration is the cumulative result of my Emacs experience
-;; since December 2020. Its primary philosphy is preserving the basic
+;; since December 2020. Its primary philosophy is preserving the basic
 ;; interactive experience of vanilla Emacs, but with a higher level of
-;; interactivity and functionality. This is done with packages like
-;; `ctrlf', `vertico', and `consult'.
+;; interactivity for an improved user experience. This approach is
+;; based around packages like `ctrlf', `vertico', and `consult'.
 
 ;;; Code:
 (require 'comp)
