@@ -379,7 +379,8 @@ If region, save region. If no region, save current line."
               (recenter))))
   :config
   ;; Due to conflicting binding at M-= in `org-mode'.
-  (bind-key "C-c =" #'er/expand-region org-mode-map))
+  (with-eval-after-load 'org
+    (bind-key "C-c =" #'er/expand-region org-mode-map)))
 
 (use-package git-gutter
   :load-path "packages/git-gutter"
