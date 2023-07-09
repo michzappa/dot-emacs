@@ -728,7 +728,7 @@ If region, save region. If no region, save current line."
 
 (use-package tuareg
   :load-path "packages/tuareg"
-  :mode "\\.ml\\'")
+  :mode ("\\.ml\\'" . tuareg-mode))
 
 (use-package typescript-ts-mode
   :mode ("\\.ts\\'" "\\.tsx"))
