@@ -60,6 +60,7 @@
       confirm-kill-processes nil
       create-lockfiles nil
       delete-by-moving-to-trash t
+      dired-listing-switches "-al --group-directories-first"
       enable-recursive-minibuffers t
       find-file-suppress-same-file-warnings t
       find-file-visit-truename t
