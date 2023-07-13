@@ -445,6 +445,10 @@ If region, save region. If no region, save current line."
   :mode ("\\.ledger\\'")
   :custom (ledger-clear-whole-transactions t))
 
+(use-package lilypond-mode
+  :load-path "packages/lilypond"
+  :mode ("\\.ly\\'" . LilyPond-mode))
+
 (use-package macrostep
   :load-path "packages/macrostep"
   :bind (:map emacs-lisp-mode-map
