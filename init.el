@@ -705,13 +705,7 @@ If region, save region. If no region, save current line."
 (use-package sly
   :load-path "packages/sly")
 
-(use-package tex-site
-  :load-path "packages/auctex"
-  ;; To Install Auctex:
-  ;; - ./autogen.sh
-  ;; - mkdir ~/tmp/texmf
-  ;; - ./configure --with-texmf-dir=~/tmp/texmf
-  ;; - make
+(use-package auctex
   :init
   (setq-default TeX-engine 'xetex)
   :custom
