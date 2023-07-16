@@ -197,6 +197,9 @@ If region, save region. If no region, save current line."
 (bind-key "M-Q" #'mz/unfill-paragraph)
 
 ;; Package configurations using `use-package'.
+(use-package ada-mode
+  :mode ("\\.adb\\'" "\\.ads\\'"))
+
 (use-package agda2-mode
   :mode "\\.agda\\'")
 
