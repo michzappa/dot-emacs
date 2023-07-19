@@ -3,7 +3,7 @@
 	url = https://github.com/emacs-dashboard/emacs-dashboard
 [submodule "packages/ef-themes"]
 	path = packages/ef-themes
-	url = git@github.com:protesilaos/ef-themes.git
+	url = https://github.com/protesilaos/ef-themes.git
 [submodule "packages/magit"]
 	path = packages/magit
 	url = https://github.com/magit/magit
