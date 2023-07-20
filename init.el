@@ -341,9 +341,9 @@ If region, save region. If no region, save current line."
   (add-hook 'lisp-interaction-mode-hook #'eldoc-mode))
 
 (use-package elec-pair
+  :hook ((prog-mode org-mode) . electric-pair-mode)
   :config
-  ;; Automatically close delimiters, but not <> in `org-mode'.
-  (electric-pair-mode +1)
+  ;; Do not automatically close <> in `org-mode'.
   (add-hook
    'org-mode-hook
    (lambda ()
