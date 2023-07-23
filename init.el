@@ -341,7 +341,7 @@ If region, save region. If no region, save current line."
   (add-hook 'lisp-interaction-mode-hook #'eldoc-mode))
 
 (use-package elec-pair
-  :hook ((prog-mode org-mode) . electric-pair-mode)
+  :hook ((prog-mode-hook org-mode-hook) . electric-pair-mode)
   :config
   ;; Do not automatically close <> in `org-mode'.
   (add-hook
