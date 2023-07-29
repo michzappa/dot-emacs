@@ -99,7 +99,6 @@
 (bind-key "C-+" #'text-scale-increase)
 (bind-key "C--" #'text-scale-decrease)
 (bind-key "C-c D m" #'mkdir)
-(bind-key "C-c d" #'dired-jump)
 (bind-key "C-x C-b" #'switch-to-buffer)
 (bind-key "C-x k" #'kill-current-buffer)
 (bind-key "C-x s" #'save-buffer)
