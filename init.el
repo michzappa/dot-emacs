@@ -3,10 +3,9 @@
 ;;; Commentary:
 
 ;; This configuration is the cumulative result of my Emacs experience
-;; since December 2020. Its primary philosophy is preserving the basic
-;; interactive experience of vanilla Emacs, but with a higher level of
-;; interactivity for an improved user experience. This approach is
-;; based around packages like `ctrlf', `vertico', and `consult'.
+;; since December 2020. Its primary philosophy is the preservation of
+;; vanilla Emacs' interface with modern interactivity. This is
+;; achieved with packages like `vertico', `consult', and `ctrlf'.
 
 ;;; Code:
 (require 'comp)
@@ -196,7 +195,9 @@ If region, save region. If no region, save current line."
 
 (bind-key "M-Q" #'mz/unfill-paragraph)
 
-;; Package configurations using `use-package'.
+;; Package configurations using `use-package'. The inclusion of
+;; `load-path' means that a package is not built-in, and is managed
+;; via a git submodule in this repository.
 (use-package ada-mode
   :mode ("\\.adb\\'" "\\.ads\\'"))
 
@@ -752,7 +753,6 @@ If region, save region. If no region, save current line."
 (use-package vterm
   :demand t
   :after project
-
   :bind (("M-T" . mz/vterm))
   :custom
   (vterm-max-scrollback 100000)
