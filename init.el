@@ -187,6 +187,11 @@ If region, save region. If no region, save current line."
 
 (bind-key "M-W" #'mz/wiktionary-lookup)
 
+(defun mz/xkcd ()
+  "Look up an XKCD comic number from `completing-read'."
+  (interactive)
+  (browse-url (concat "https://xkcd.com/" (read-string "comic: "))))
+
 (defun mz/unfill-paragraph ()
   "Turn the multiline paragraph to one line."
   (interactive)
@@ -753,7 +758,7 @@ If region, save region. If no region, save current line."
 (use-package vterm
   :demand t
   :after project
-  :bind (("M-T" . mz/vterm))
+  :bind (("C-c T" . mz/vterm))
   :custom
   (vterm-max-scrollback 100000)
   :config
