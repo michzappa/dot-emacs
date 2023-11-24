@@ -816,4 +816,5 @@ If region, save region. If no region, save current line."
 ;;; init.el ends here.
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars unresolved)
+;; eval: (flymake-mode +1)
 ;; End:
