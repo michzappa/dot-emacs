@@ -238,24 +238,39 @@ If region, save region. If no region, save current line."
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
+;; Configure `use-package' for use with `elpaca'.
 (elpaca elpaca-use-package
   ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode)
   ;; Assume :elpaca t unless otherwise specified.
   (setq elpaca-use-package-by-default t))
-
-;; Block until current queue processed.
 (elpaca-wait)
 
-;; Package configurations using `use-package'. The inclusion of
-;; `load-path' means that a package is not built-in, and is managed
-;; via a git submodule in this repository.
-(use-package ada-mode
-  :elpaca nil
+;; Packages already on load-path (inclluded wit Emacs or installed
+;; with system package manager) do not need to be pulled from external
+;; sources. Termed "built-in" in this configuration.
+(defconst use-builtin-font-lock-keywords
+  '(("(\\(use-builtin\\)\\_>[ \t']*\\(\\(?:\\sw\\|\\s_\\)+\\)?"
+     (1 font-lock-keyword-face)
+     (2 font-lock-constant-face nil t)))
+  "Identical font-locking to `use-package' for the NAME of the package.")
+
+(font-lock-add-keywords 'emacs-lisp-mode use-builtin-font-lock-keywords)
+
+(defmacro use-builtin (name &rest args)
+  "Use `use-package' to configure NAME with ARGS."
+  (declare (indent defun))
+  `(use-package ,name
+     ,@args
+     :elpaca nil))
+
+;; Package configurations using `use-package', both "built-in" and
+;; external.
+
+(use-builtin ada-mode
   :mode ("\\.adb\\'" "\\.ads\\'"))
 
-(use-package agda2-mode
-  :elpaca nil
+(use-builtin agda2-mode
   :mode "\\.agda\\'")
 
 (use-package all-the-icons-completion
@@ -356,8 +371,7 @@ If region, save region. If no region, save current line."
   :config
   (load-theme mz/ef-dark))
 
-(use-package eglot
-  :elpaca nil
+(use-builtin eglot
   :hook
   (typescript-ts-base-mode-hook . eglot-ensure)
   (tuareg-mode-hook . eglot-ensure)
@@ -366,15 +380,13 @@ If region, save region. If no region, save current line."
                '((typescript-ts-base-mode)
                  "typescript-language-server" "--stdio")))
 
-(use-package eldoc
-  :elpaca nil
+(use-builtin eldoc
   :config
   (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
   (add-hook 'ielm-mode-hook #'eldoc-mode)
   (add-hook 'lisp-interaction-mode-hook #'eldoc-mode))
 
-(use-package elec-pair
-  :elpaca nil
+(use-builtin elec-pair
   :hook ((prog-mode-hook org-mode-hook) . electric-pair-mode)
   :config
   ;; Do not automatically close <> in `org-mode'.
@@ -385,8 +397,7 @@ If region, save region. If no region, save current line."
                  `(lambda (c)
                     (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c)))))))
 
-(use-package erc
-  :elpaca nil
+(use-builtin erc
   :bind (("C-c u e" . erc))
   :custom
   (erc-autojoin-channels-alist
@@ -426,8 +437,7 @@ If region, save region. If no region, save current line."
 (use-package go-mode
   :mode "\\.go\\'")
 
-(use-package gnus
-  :elpaca nil
+(use-builtin gnus
   :bind (("C-c u g" . gnus))
   :custom
   (gnus-always-read-dribble-file t)
@@ -468,16 +478,14 @@ If region, save region. If no region, save current line."
 (use-package kotlin-mode
   :mode "\\.kt\\'")
 
-(use-package lean-mode
-  :elpaca nil
+(use-builtin lean-mode
   :mode "\\.lean\\'")
 
 (use-package ledger-mode
   :mode ("\\.ledger\\'")
   :custom (ledger-clear-whole-transactions t))
 
-(use-package lilypond-mode
-  :elpaca nil
+(use-builtin lilypond-mode
   :mode ("\\.ly\\'" . LilyPond-mode))
 
 (use-package macrostep
@@ -539,12 +547,10 @@ If region, save region. If no region, save current line."
   :config
   (startup-redirect-eln-cache (expand-file-name "eln-cache" no-littering-var-directory)))
 
-(use-package ob-tangle
-  :elpaca nil
+(use-builtin ob-tangle
   :bind ("C-c C-v T" . org-babel-detangle))
 
-(use-package org
-  :elpaca nil
+(use-builtin org
   :demand t
   :custom
   (org-directory "~/org")
@@ -581,8 +587,7 @@ If region, save region. If no region, save current line."
   :custom
   (org-bullets-bullet-list '( "●" "◉" "○")))
 
-(use-package ox-extra
-  :elpaca nil
+(use-builtin ox-extra
   :config
   (ox-extras-activate '(ignore-headlines)))
 
@@ -599,20 +604,17 @@ If region, save region. If no region, save current line."
           ((org-drill-entries-pending-p org-drill-last-session) (org-drill-resume))
           (t (org-drill)))))
 
-(use-package org-tempo
-  :elpaca nil
+(use-builtin org-tempo
   :config
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("nn" . "src nix :noweb-ref")))
 
-(use-package ox-latex
-  :elpaca nil
+(use-builtin ox-latex
   :config
   (add-to-list 'org-latex-logfiles-extensions "bbl")
   (add-to-list 'org-latex-logfiles-extensions "tex"))
 
-(use-package pdf-tools
-  :elpaca nil
+(use-builtin pdf-tools
   :mode (("\\.pdf\\'" . pdf-view-mode))
   :config
   (use-package pdf-annot
@@ -631,8 +633,7 @@ If region, save region. If no region, save current line."
   (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode)
   (add-hook 'pdf-view-mode-hook #'(lambda () (display-line-numbers-mode -1))))
 
-(use-package project
-  :elpaca nil
+(use-builtin project
   ;; TODO exclude the files (or more apt, anything in a submodule) in
   ;; user-emacs-directory/packages from project search?
   :config
@@ -654,8 +655,7 @@ If region, save region. If no region, save current line."
         ("C-c s {" . puni-wrap-curly)
         ("C-c s u" . puni-splice)))
 
-(use-package proof-general
-  :elpaca nil
+(use-builtin proof-general
   :mode ("\\.v\\'" . coq-mode))
 
 (use-package orderless
@@ -674,15 +674,13 @@ If region, save region. If no region, save current line."
 (use-package rainbow-mode
   :hook web-mode-hook)
 
-(use-package recentf
-  :elpaca nil
+(use-builtin recentf
   :config
   (setq recentf-max-menu-items 25
         recentf-max-saved-items 25)
   (recentf-mode +1))
 
-(use-package ruby-mode
-  :elpaca nil
+(use-builtin ruby-mode
   :mode "\\.rb\\'"
   :config
   (add-hook 'ruby-mode-hook #'(lambda () (modify-syntax-entry ?- "w")))
@@ -692,12 +690,10 @@ If region, save region. If no region, save current line."
 (use-package rust-mode
   :mode "\\.rs\\'")
 
-(use-package savehist
-  :elpaca nil
+(use-builtin savehist
   :hook (emacs-startup-hook . savehist-mode))
 
-(use-package saveplace
-  :elpaca nil
+(use-builtin saveplace
   :hook (emacs-startup-hook . save-place-mode))
 
 (use-package scratch
@@ -707,8 +703,7 @@ If region, save region. If no region, save current line."
 
 (use-package sly)
 
-(use-package auctex
-  :elpaca nil
+(use-builtin tex-site
   :init
   (setq-default TeX-engine 'xetex)
   :custom
@@ -734,8 +729,7 @@ If region, save region. If no region, save current line."
 (use-package tuareg
   :mode ("\\.ml\\'" . tuareg-mode))
 
-(use-package typescript-ts-mode
-  :elpaca nil
+(use-builtin typescript-ts-mode
   :mode ("\\.ts\\'" "\\.tsx"))
 
 (use-package undo-tree
@@ -747,8 +741,7 @@ If region, save region. If no region, save current line."
 (use-package vertico
   :hook (emacs-startup-hook . vertico-mode))
 
-(use-package vterm
-  :elpaca nil
+(use-builtin vterm
   :demand t
   :after project
   :bind (("C-c T" . mz/vterm))
@@ -790,8 +783,7 @@ If region, save region. If no region, save current line."
 (use-package which-key
   :hook (emacs-startup-hook . which-key-mode))
 
-(use-package whitespace
-  :elpaca nil
+(use-builtin whitespace
   :hook (prog-mode-hook . whitespace-mode)
   :custom
   (whitespace-line-column 100)
@@ -801,8 +793,7 @@ If region, save region. If no region, save current line."
                       trailing
                       lines-tail)))
 
-(use-package windmove
-  :elpaca nil
+(use-builtin windmove
   :bind
   (("C-c j" . #'windmove-left)
    ("C-c l" . #'windmove-right)
