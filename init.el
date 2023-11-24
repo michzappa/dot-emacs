@@ -200,43 +200,84 @@ If region, save region. If no region, save current line."
 
 (bind-key "M-Q" #'mz/unfill-paragraph)
 
+;; Bootstrap `elpaca' for external package management.
+(defvar elpaca-installer-version 0.6)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default t))
+
+;; Block until current queue processed.
+(elpaca-wait)
+
 ;; Package configurations using `use-package'. The inclusion of
 ;; `load-path' means that a package is not built-in, and is managed
 ;; via a git submodule in this repository.
 (use-package ada-mode
+  :elpaca nil
   :mode ("\\.adb\\'" "\\.ads\\'"))
 
 (use-package agda2-mode
+  :elpaca nil
   :mode "\\.agda\\'")
 
 (use-package all-the-icons-completion
-  :load-path "packages/all-the-icons-completion"
   :init
-  (use-package all-the-icons
-    :load-path "packages/all-the-icons")
+  (use-package all-the-icons)
   :after marginalia
   :hook (emacs-startup-hook . all-the-icons-completion-mode))
 
-(use-package apheleia-core
-  :load-path "packages/apheleia"
+(use-package apheleia
   :hook
   ((nix-mode-hook
    tuareg-mode-hook
    typescript-ts-base-mode-hook) . apheleia-mode))
 
 (use-package atomic-chrome
-  :load-path "packages/atomic-chrome"
   :demand t
-  :init
-  (use-package websocket
-    :load-path "packages/websocket")
   :custom
   (atomic-chrome-buffer-open-style 'frame)
   :config
   (atomic-chrome-start-server))
 
 (use-package avy
-  :load-path "packages/avy"
   :bind (("C-c J" . avy-goto-word-0)
          ("C-c K" . avy-goto-char-timer)
          ("C-c L" . avy-goto-line))
@@ -246,17 +287,12 @@ If region, save region. If no region, save current line."
   (avy-orders-alist '((avy-goto-word-0 . avy-order-closest))))
 
 (use-package company
-  :load-path "packages/company"
   :hook (emacs-startup-hook . global-company-mode)
   :custom
   (company-idle-delay 0)
   (company-show-numbers t))
 
 (use-package consult
-  :load-path "packages/consult"
-  :init
-  (use-package compat
-    :load-path "packages/compat")
   :bind
   (("C-S-s" . consult-line)
    ("C-x C-r" . consult-recent-file)
@@ -267,11 +303,9 @@ If region, save region. If no region, save current line."
    ("s" . consult-ripgrep)))
 
 (use-package clipetty
-  :load-path "packages/clipetty"
   :hook (emacs-startup-hook . global-clipetty-mode))
 
 (use-package ctrlf
-  :load-path "packages/ctrlf"
   :hook (emacs-startup-hook . ctrlf-mode)
   :custom
   (ctrlf-alternate-search-style 'regexp)
@@ -279,7 +313,6 @@ If region, save region. If no region, save current line."
   (ctrlf-default-search-style 'fuzzy))
 
 (use-package dashboard
-  :load-path "packages/dashboard"
   :demand t
   :custom
   (dashboard-footer-messages '("On the cutting edge of cocking about"
@@ -302,25 +335,18 @@ If region, save region. If no region, save current line."
   (dashboard-setup-startup-hook))
 
 (use-package default-text-scale
-  :load-path "packages/default-text-scale"
   :demand t
   :config
   (set-face-attribute 'default nil :height 140)
   (default-text-scale-mode +1))
 
 (use-package direnv
-  :load-path "packages/direnv"
   :hook (emacs-startup-hook . direnv-mode))
 
 (use-package dumb-jump
-  :load-path "packages/dumb-jump"
-  :init
-  (use-package popup
-    :load-path "packages/popup")
   :hook (xref-backend-functions . dumb-jump-xref-activate))
 
 (use-package ef-themes
-  :load-path "packages/ef-themes"
   :demand t
   :init
   (defvar mz/ef-dark 'ef-dark "My preferred dark theme in `ef-themes'.")
@@ -331,6 +357,7 @@ If region, save region. If no region, save current line."
   (load-theme mz/ef-dark))
 
 (use-package eglot
+  :elpaca nil
   :hook
   (typescript-ts-base-mode-hook . eglot-ensure)
   (tuareg-mode-hook . eglot-ensure)
@@ -340,12 +367,14 @@ If region, save region. If no region, save current line."
                  "typescript-language-server" "--stdio")))
 
 (use-package eldoc
+  :elpaca nil
   :config
   (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
   (add-hook 'ielm-mode-hook #'eldoc-mode)
   (add-hook 'lisp-interaction-mode-hook #'eldoc-mode))
 
 (use-package elec-pair
+  :elpaca nil
   :hook ((prog-mode-hook org-mode-hook) . electric-pair-mode)
   :config
   ;; Do not automatically close <> in `org-mode'.
@@ -357,6 +386,7 @@ If region, save region. If no region, save current line."
                     (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c)))))))
 
 (use-package erc
+  :elpaca nil
   :bind (("C-c u e" . erc))
   :custom
   (erc-autojoin-channels-alist
@@ -374,11 +404,9 @@ If region, save region. If no region, save current line."
    '("JOIN" "NICK" "PART" "QUIT" "MODE" "324" "329" "332" "333" "353" "477")))
 
 (use-package exec-path-from-shell
-  :load-path "packages/exec-path-from-shell"
   :hook (emacs-startup-hook . exec-path-from-shell-initialize))
 
 (use-package expand-region
-  :load-path "packages/expand-region"
   :demand t
   :bind
   (("M-=" . (lambda () (interactive)
@@ -393,14 +421,13 @@ If region, save region. If no region, save current line."
     (bind-key "C-c =" #'er/expand-region org-mode-map)))
 
 (use-package git-gutter
-  :load-path "packages/git-gutter"
   :hook (emacs-startup-hook . global-git-gutter-mode))
 
 (use-package go-mode
-  :load-path "packages/go-mode"
   :mode "\\.go\\'")
 
 (use-package gnus
+  :elpaca nil
   :bind (("C-c u g" . gnus))
   :custom
   (gnus-always-read-dribble-file t)
@@ -415,18 +442,14 @@ If region, save region. If no region, save current line."
   (gnus-use-cache t))
 
 (use-package haskell-mode
-  :load-path "packages/haskell-mode"
   :mode "\\.hs\\'"
   :config
   (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook #'haskell-doc-mode))
 
 (use-package helpful
-  :load-path "packages/helpful"
   :demand t
-  :init
-  (use-package elisp-refs
-    :load-path "packages/elisp-refs")
+
   :bind (("C-c C-h" . helpful-at-point)
          ("C-h F"   . helpful-function)
          ("C-h C"   . helpful-command))
@@ -436,48 +459,36 @@ If region, save region. If no region, save current line."
   (advice-add 'describe-key      :override #'helpful-key))
 
 (use-package hl-todo
-  :load-path "packages/hl-todo"
   :hook ((prog-mode-hook org-mode-hook) . hl-todo-mode))
 
 (use-package kbd-mode
-  :load-path "packages/kbd-mode"
+  :elpaca '(kbd-mode :host github :repo "kmonad/kbd-mode")
   :mode "\\.kbd\\'")
 
 (use-package kotlin-mode
-  :load-path "packages/kotlin-mode"
   :mode "\\.kt\\'")
 
 (use-package lean-mode
+  :elpaca nil
   :mode "\\.lean\\'")
 
 (use-package ledger-mode
-  :load-path "packages/ledger-mode"
   :mode ("\\.ledger\\'")
   :custom (ledger-clear-whole-transactions t))
 
 (use-package lilypond-mode
-  :load-path "packages/lilypond"
+  :elpaca nil
   :mode ("\\.ly\\'" . LilyPond-mode))
 
 (use-package macrostep
-  :load-path "packages/macrostep"
   :bind (:map emacs-lisp-mode-map
               ("C-c e" . macrostep-expand)
               ("C-c c" . macrostep-collapse)
               ("C-c q" . macrostep-collapse-all)))
 
 (use-package magit
-  :load-path "packages/magit/lisp"
   :after project
   :init
-  (use-package compat
-    :load-path "packages/compat")
-  (use-package dash
-    :load-path "packages/dash")
-  (use-package transient
-    :load-path "packages/transient")
-  (use-package with-editor
-    :load-path "packages/with-editor/lisp")
   ;; Use `magit' instead of `vc-mode' in project.el.
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)
   (delete '(project-vc-dir "VC-Dir") project-switch-commands)
@@ -487,28 +498,22 @@ If region, save region. If no region, save current line."
          ("m" . magit-project-status)))
 
 (use-package marginalia
-  :load-path "packages/marginalia"
   :hook (emacs-startup-hook . marginalia-mode))
 
 (use-package markdown-mode
-  :load-path "packages/markdown-mode"
   :mode "\\.md\\'")
 
 (use-package minions
-  :load-path "packages/minions"
   :hook (emacs-startup-hook . minions-mode))
 
 (use-package multiple-cursors
-  :load-path "packages/multiple-cursors"
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)))
 
 (use-package nix-mode
-  :load-path "packages/nix-mode"
   :mode "\\.nix\\'")
 
 (use-package nixos-options
-  :load-path "packages/nix-emacs"
   :bind (("C-c N S" . mz/nixos-options))
   :config
   (defun mz/nixos-options ()
@@ -526,25 +531,20 @@ If region, save region. If no region, save current line."
       (pop-to-buffer option-buffer))))
 
 (use-package nov
-  :load-path "packages/nov"
-  :init
-  (use-package esxml-query
-    :load-path "packages/esxml")
   :mode ("\\.epub\\'" . nov-mode))
 
 (use-package no-littering
-  :load-path "packages/no-littering"
   :demand t
   :init
-  (use-package compat
-    :load-path "packages/compat")
   :config
   (startup-redirect-eln-cache (expand-file-name "eln-cache" no-littering-var-directory)))
 
 (use-package ob-tangle
+  :elpaca nil
   :bind ("C-c C-v T" . org-babel-detangle))
 
 (use-package org
+  :elpaca nil
   :demand t
   :custom
   (org-directory "~/org")
@@ -577,21 +577,16 @@ If region, save region. If no region, save current line."
   (add-to-list 'org-link-frame-setup '(file . find-file)))
 
 (use-package org-bullets
-  :load-path "packages/org-bullets"
   :hook (org-mode-hook . org-bullets-mode)
   :custom
   (org-bullets-bullet-list '( "●" "◉" "○")))
 
 (use-package ox-extra
-  :load-path "packages/org-contrib/lisp"
+  :elpaca nil
   :config
   (ox-extras-activate '(ignore-headlines)))
 
 (use-package org-drill
-  :load-path "packages/org-drill"
-  :init
-  (use-package persist
-    :load-path "packages/persist")
   :bind
   (:map org-mode-map (("C-c o d" . mz/org-drill-resume)))
   :custom
@@ -605,16 +600,19 @@ If region, save region. If no region, save current line."
           (t (org-drill)))))
 
 (use-package org-tempo
+  :elpaca nil
   :config
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("nn" . "src nix :noweb-ref")))
 
 (use-package ox-latex
+  :elpaca nil
   :config
   (add-to-list 'org-latex-logfiles-extensions "bbl")
   (add-to-list 'org-latex-logfiles-extensions "tex"))
 
 (use-package pdf-tools
+  :elpaca nil
   :mode (("\\.pdf\\'" . pdf-view-mode))
   :config
   (use-package pdf-annot
@@ -634,6 +632,7 @@ If region, save region. If no region, save current line."
   (add-hook 'pdf-view-mode-hook #'(lambda () (display-line-numbers-mode -1))))
 
 (use-package project
+  :elpaca nil
   ;; TODO exclude the files (or more apt, anything in a submodule) in
   ;; user-emacs-directory/packages from project search?
   :config
@@ -646,7 +645,6 @@ If region, save region. If no region, save current line."
   (setq project-find-functions '(mz/promote-project project-try-vc)))
 
 (use-package puni
-  :load-path "packages/puni"
   :hook (prog-mode-hook . puni-mode)
   :bind
   (:map puni-mode-map
@@ -657,10 +655,10 @@ If region, save region. If no region, save current line."
         ("C-c s u" . puni-splice)))
 
 (use-package proof-general
+  :elpaca nil
   :mode ("\\.v\\'" . coq-mode))
 
 (use-package orderless
-  :load-path "packages/orderless"
   :demand t
   :custom
   (completion-styles '(orderless basic))
@@ -668,24 +666,23 @@ If region, save region. If no region, save current line."
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package racket-mode
-  :load-path "packages/racket-mode"
   :mode "\\.rkt\\'")
 
 (use-package rainbow-delimiters
-  :load-path "packages/rainbow-delimiters"
   :hook (prog-mode-hook . rainbow-delimiters-mode))
 
 (use-package rainbow-mode
-  :load-path "packages/rainbow-mode"
   :hook web-mode-hook)
 
 (use-package recentf
+  :elpaca nil
   :config
   (setq recentf-max-menu-items 25
         recentf-max-saved-items 25)
   (recentf-mode +1))
 
 (use-package ruby-mode
+  :elpaca nil
   :mode "\\.rb\\'"
   :config
   (add-hook 'ruby-mode-hook #'(lambda () (modify-syntax-entry ?- "w")))
@@ -693,26 +690,25 @@ If region, save region. If no region, save current line."
   (add-hook 'ruby-mode-hook #'(lambda () (modify-syntax-entry ?@ "w"))))
 
 (use-package rust-mode
-  :mode "\\.rs\\'"
-  :load-path "packages/rust-mode")
+  :mode "\\.rs\\'")
 
 (use-package savehist
+  :elpaca nil
   :hook (emacs-startup-hook . savehist-mode))
 
 (use-package saveplace
+  :elpaca nil
   :hook (emacs-startup-hook . save-place-mode))
 
 (use-package scratch
-  :load-path "packages/scratch"
   :bind (("C-c S" . scratch)))
 
-(use-package simple-httpd
-  :load-path "packages/simple-httpd")
+(use-package simple-httpd)
 
-(use-package sly
-  :load-path "packages/sly")
+(use-package sly)
 
 (use-package auctex
+  :elpaca nil
   :init
   (setq-default TeX-engine 'xetex)
   :custom
@@ -721,6 +717,7 @@ If region, save region. If no region, save current line."
   (TeX-save-query nil))
 
 (use-package tramp
+  :elpaca nil
   :config
   (defun mz/sudo ()
     "Use TRAMP to `sudo' the current buffer."
@@ -735,27 +732,23 @@ If region, save region. If no region, save current line."
         tramp-verbose 1))
 
 (use-package tuareg
-  :load-path "packages/tuareg"
   :mode ("\\.ml\\'" . tuareg-mode))
 
 (use-package typescript-ts-mode
+  :elpaca nil
   :mode ("\\.ts\\'" "\\.tsx"))
 
 (use-package undo-tree
-  :load-path "packages/undo-tree"
-  :init
-  (use-package queue
-    :load-path "packages/queue")
   :hook (emacs-startup-hook . global-undo-tree-mode)
   :custom
   (undo-tree-history-directory-alist
    `(("." . ,(concat user-emacs-directory "var/undo-tree-history")))))
 
 (use-package vertico
-  :load-path "packages/vertico"
   :hook (emacs-startup-hook . vertico-mode))
 
 (use-package vterm
+  :elpaca nil
   :demand t
   :after project
   :bind (("C-c T" . mz/vterm))
@@ -788,7 +781,6 @@ If region, save region. If no region, save current line."
   (bind-key "t" #'mz/vterm project-prefix-map))
 
 (use-package web-mode
-  :load-path "packages/web-mode"
   :mode "\\.erb\\'"
   :custom
   (web-mode-auto-close-style 2)
@@ -796,10 +788,10 @@ If region, save region. If no region, save current line."
   (web-mode-markup-indent-offset 2))
 
 (use-package which-key
-  :load-path "packages/which-key"
   :hook (emacs-startup-hook . which-key-mode))
 
 (use-package whitespace
+  :elpaca nil
   :hook (prog-mode-hook . whitespace-mode)
   :custom
   (whitespace-line-column 100)
@@ -810,6 +802,7 @@ If region, save region. If no region, save current line."
                       lines-tail)))
 
 (use-package windmove
+  :elpaca nil
   :bind
   (("C-c j" . #'windmove-left)
    ("C-c l" . #'windmove-right)
@@ -821,13 +814,11 @@ If region, save region. If no region, save current line."
    ("C-c <down>" . #'windmove-swap-states-down)))
 
 (use-package ws-butler
-  :load-path "packages/ws-butler"
   :hook ((org-mode-hook prog-mode-hook) . ws-butler-mode)
   :custom
   (ws-butler-convert-leading-tabs-or-spaces t))
 
 (use-package yaml-mode
-  :load-path "packages/yaml-mode"
   :mode ("\\.yaml\\'" "\\.yml\\'"))
 
 (provide 'init)
