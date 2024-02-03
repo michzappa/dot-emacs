@@ -548,7 +548,9 @@ If region, save region. If no region, save current line."
   (startup-redirect-eln-cache (expand-file-name "eln-cache" no-littering-var-directory)))
 
 (use-builtin ob-tangle
-  :bind ("C-c C-v T" . org-babel-detangle))
+  :bind
+  (:map org-mode-map
+        (("C-c C-v T" . org-babel-detangle))))
 
 (use-builtin org
   :demand t
